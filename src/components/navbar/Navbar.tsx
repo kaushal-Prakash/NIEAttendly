@@ -33,16 +33,16 @@ const Navbar = () => {
           isOpen ? "translate-x-0" : "translate-x-full"
         } md:relative md:flex-row md:space-y-0 md:space-x-6 md:transform-none md:h-auto md:w-auto font-semibold`}
       >
-        <li className="text-2xl md:text-base hover:text-slate-400 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
+        <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
           <Link href="/">Home</Link>
         </li>
-        <li className="text-2xl md:text-base hover:text-slate-400 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
+        <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
           <Link href="/about">About</Link>
         </li>
-        <li className="text-2xl md:text-base hover:text-slate-400 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
+        <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
           <Link href="/services">Services</Link>
         </li>
-        <li className="text-2xl md:text-base hover:text-slate-400 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
+        <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
           <Link href="/contact">Contact</Link>
         </li>
       </ul>
