@@ -26,6 +26,7 @@ export default function SignupPage() {
       toast.success("Signup successful!");
       setSuccess("Signup successful!"); // Success message
       router.push("/login"); // Redirect to login page after successful signup
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log("Signup failed", error.message);
       toast.error("Signup failed. Please try again.");

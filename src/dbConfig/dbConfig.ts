@@ -1,21 +1,33 @@
 import mongoose from "mongoose";
 
 export async function connect() {
+  // Check if MONGO_URL is defined
+  const mongoUrl = process.env.MONGO_URL;
+
+  if (!mongoUrl) {
+    console.error("MONGO_URL is not defined in the environment variables");
+    process.exit(1); // Exit process with an error code
+  }
+
   try {
-    mongoose.connect(process.env.MONGO_URL!);
-    const connection = mongoose.connection;
+    // Wait for the connection to complete
+    await mongoose.connect(mongoUrl);
 
-    connection.on("connected", () => {
-      console.log("MongoDB connected !");
+    // Success event
+    mongoose.connection.on("connected", () => {
+      console.log("MongoDB connected!");
     });
 
-    connection.on("error", (err) => {
-      console.log("MongoDB connection error, make sure DB is up and running !");
-      console.log(err);
-      process.exit(1); // exit with error
+    // Error event
+    mongoose.connection.on("error", (err) => {
+      console.error("MongoDB connection error, make sure DB is up and running!");
+      console.error(err);
+      process.exit(1); // Exit process if connection fails
     });
+
   } catch (error) {
-    console.log("Something went wrong in connecting DB");
-    console.log(error);
+    console.error("Something went wrong in connecting DB");
+    console.error(error);
+    process.exit(1); // Exit process if an error occurs during the connection attempt
   }
 }

@@ -2,46 +2,84 @@ import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
 
+// Connect to the database
 connect();
 
 export async function POST(request: NextRequest) {
   try {
+    // Parse request body
     const reqBody = await request.json();
-    const { username, email, password } = reqBody;
+    const { email, password } = reqBody;
 
-    console.log(reqBody);
-
-    // check if user already exists
-    const user = await User.findOne({ email });
-
-    if (user) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: "User already exists" },
+        { error: "Email and password are required" },
         { status: 400 }
       );
     }
 
-    // hash password
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return NextResponse.json(
+        { error: "User does not exist" },
+        { status: 400 }
+      );
+    }
+    console.log("User found");
 
-    const newUser = new User({
-      username,
-      email,
-      password: hashedPassword,
+    // Check if password is correct
+    const validPassword = await bcryptjs.compare(password, user.password);
+    if (!validPassword) {
+      return NextResponse.json(
+        { error: "Invalid password" },
+        { status: 400 }
+      );
+    }
+    console.log("Password is correct");
+
+    // Ensure TOKEN_SECRET is defined in the environment
+    const tokenSecret = process.env.TOKEN_SECRET;
+    if (!tokenSecret) {
+      return NextResponse.json(
+        { error: "Token secret is not defined" },
+        { status: 500 }
+      );
+    }
+
+    // Create token data
+    const tokenData = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    };
+
+    // Generate JWT token
+    const token = jwt.sign(tokenData, tokenSecret, {
+      expiresIn: "1d", // Token expires in 1 day
     });
 
-    const savedUser = await newUser.save();
-    console.log(savedUser);
-
-    // Respond with user details
-    return NextResponse.json({
-      message: "User created successfully",
+    // Create response and set the token cookie
+    const response = NextResponse.json({
+      message: "Login successful",
       success: true,
-      savedUser,
     });
+
+    // Set the token as a cookie (secure flag should be set to `true` in production)
+    response.cookies.set("token", token, {
+      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
+      secure: process.env.NODE_ENV === "production", // Only set secure cookies in production
+      sameSite: "strict", // Mitigate CSRF attacks (lowercase "strict")
+      path: "/", // Make the cookie accessible across the site
+      maxAge: 60 * 60 * 24, // 1 day (in seconds)
+    });
+
+    return response;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    console.error(error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

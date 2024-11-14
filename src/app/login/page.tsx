@@ -26,7 +26,8 @@ export default function LoginPage() {
       toast.success("Login successful!");
       setSuccess("Login successful!"); // Success message
       // Optionally store authentication token (e.g., in cookies or localStorage)
-      router.push("/dashboard"); // Redirect to dashboard or homepage after successful login
+      router.push("/home"); // Redirect to dashboard or homepage after successful login
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log("Login failed", error.message);
       toast.error("Login failed. Please check your credentials.");
