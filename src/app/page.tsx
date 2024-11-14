@@ -43,9 +43,9 @@ export default function Home() {
             effortlessly, in real-time, wherever you are.
           </p>
           <div className="flex justify-center md:justify-start">
-            <Link href="/my-attendence">
+            <Link href="/signup">
               <button className="bg-blue-600 mb-5 home-content text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-700 transition-colors">
-                Let’s Get Started!
+                Let&apos;s Get Started!
               </button>
             </Link>
           </div>

@@ -21,15 +21,15 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="fixed navbar top-0 left-0 w-full flex items-center justify-between p-5 bg-blue-200 bg-transparent backdrop-blur-md text-black z-50 shadow-inner border-b-2">
-      <div className="text-xl font-bold">
+    <nav className="fixed navbar top-0 left-0 w-full flex items-center justify-between p-5 bg-blue-200 bg-transparent backdrop-blur-md text-black z-4\ shadow-inner border-b-2">
+      <div className="text-xl font-bold text-blue-800">
         <Link href="/">Attendly</Link>
       </div>
       <div className="md:hidden z-50" onClick={toggleMenu}>
         {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
       </div>
       <ul
-        className={`fixed top-0 left-0 w-full pr-5 h-screen flex flex-col items-center justify-center space-y-8 transform ${
+        className={`fixed top-0 left-0 w-full pr-5 h-screen bg-white md:bg-transparent backdrop-blur-3xl flex flex-col items-center justify-center space-y-8 transform ${
           isOpen ? "translate-x-0" : "translate-x-full"
         } md:relative md:flex-row md:space-y-0 md:space-x-6 md:transform-none md:h-auto md:w-auto font-semibold`}
       >
