@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import axios from 'axios';
 import LoginNavbar from '@/components/login navbar/LoginNavbar';
+import './style.css';
 
 function AttendancePage() {
   const [view, setView] = useState<'select' | 'attendance' | 'addSubject'>('select');
   const [subjects, setSubjects] = useState<{ name: string }[]>([]);
   const [newSubject, setNewSubject] = useState('');
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isFetchingSubjects, setIsFetchingSubjects] = useState(false);
 
   // Fetch subjects for attendance
@@ -59,10 +61,9 @@ function AttendancePage() {
   };
 
   return (
-    <div className="min-h-screen w-full text-gray-800"
-    style={}>
+    <div className="min-h-screen w-full text-gray-800 bg-cover bg-center home-container">
       <LoginNavbar />
-      <div className="max-w-4xl mx-auto p-6 space-y-8">
+      <div className="max-w-4xl mx-auto p-6 space-y-8 bg-slate-100 border-r-2 border-b-2 shadow-md home-content backdrop-blur-sm rounded-md">
         <h1 className="text-3xl font-bold text-center text-blue-600">Attendance Management</h1>
 
         {/* Option Selection */}
@@ -75,7 +76,7 @@ function AttendancePage() {
                 setView('attendance');
               }}
             >
-              Mark Today's Attendance
+              Mark Today&apos;s Attendance
             </button>
             <button
               className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
