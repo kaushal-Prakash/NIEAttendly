@@ -9,6 +9,16 @@ connect();
 
 export async function POST(request: NextRequest) {
   try {
+    const lastToken = request.cookies.get("token")?.value || "";
+    if(lastToken != ""){
+      const response = NextResponse.json({
+        message: "Login successful",
+        success: true,
+      });
+
+      return response;
+    }
+
     // Parse request body
     const reqBody = await request.json();
     const { email, password } = reqBody;
@@ -52,7 +62,6 @@ export async function POST(request: NextRequest) {
     // Create token data
     const tokenData = {
       id: user._id,
-      username: user.username,
       email: user.email,
     };
 
@@ -70,7 +79,8 @@ export async function POST(request: NextRequest) {
     // Set the token as a cookie (secure flag should be set to `true` in production)
     response.cookies.set("token", token, {
       httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
-      secure: process.env.NODE_ENV === "production", // Only set secure cookies in production
+      secure: process.env.NODE_ENV === "production" && request.url.startsWith("https"),
+      // Only set secure cookies in production
       sameSite: "strict", // Mitigate CSRF attacks (lowercase "strict")
       path: "/", // Make the cookie accessible across the site
       maxAge: 60 * 60 * 24, // 1 day (in seconds)
