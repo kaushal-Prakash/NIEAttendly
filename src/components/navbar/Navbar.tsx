@@ -21,7 +21,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="fixed navbar top-0 left-0 w-full flex items-center justify-between p-5 bg-blue-200 bg-transparent backdrop-blur-md text-black z-4\ shadow-inner border-b-2">
+    <nav className="fixed navbar top-0 left-0 w-full flex items-center justify-between p-5 bg-blue-200 bg-transparent backdrop-blur-md text-black z-4\ shadow-inner border-b-2 z-10">
       <div className="text-xl font-bold text-blue-800">
         <Link href="/">Attendly</Link>
       </div>
