@@ -2,10 +2,8 @@
 import React from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 
 export default function LogoutButton() {
-    const router = useRouter();
 
     const handleLogout = async () => {
         try {
@@ -13,10 +11,7 @@ export default function LogoutButton() {
             if (res.status === 200) {
                 toast.success("Logout successful");
 
-                // Add a timeout before redirecting or performing further actions
-                setTimeout(() => {
-                    router.push("/"); // Redirect to the home page
-                }, 2000); // 2 seconds delay
+                window.location.href = "/";
             } else {
                 alert("Logout failed");
             }
