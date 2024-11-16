@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const userId = await getDataFromToken(request);
 
     // Parse the request body to get attendance updates
-    const { attendanceUpdates }: { attendanceUpdates: { name: string; attended: boolean }[] } = await request.json();
+    const { attendanceUpdates }: { attendanceUpdates: { name: string; isToday: boolean; attended: boolean }[] } = await request.json();
 
     // Validate the data
     if (!attendanceUpdates || !Array.isArray(attendanceUpdates)) {
@@ -20,32 +20,32 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the user in the database
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Ensure the subjects field is an array
-    if (!user.subjects || !Array.isArray(user.subjects)) {
-      console.log('Initializing subjects array');
-      user.subjects = [];
-    }
-
     // Update attendance for each subject
-    attendanceUpdates.forEach(({ name, attended }) => {
-      let subject = user.subjects.find((subject: { name: string; }) => subject.name === name.toLowerCase());
+    attendanceUpdates.forEach(({ name, isToday, attended }) => {
+      let subject = user.subjects.find(subject => subject.name === name.toLowerCase());
+
       if (!subject) {
         // Initialize the subject if it doesn't exist
-        subject = { name: name.toLowerCase(), total: 0, present: 0 };
+        subject = { name: name.toLowerCase(), total: 0, present: 0, isToday: false };
         user.subjects.push(subject);
       }
 
-      // Increment total classes
-      subject.total += 1;
+      // Update isToday status for the subject
+      subject.isToday = isToday;
 
-      // Increment attended classes if the user attended
-      if (attended) {
-        subject.present += 1;
+      // Increment total classes only if the subject is scheduled today
+      if (isToday) {
+        subject.total += 1;
+
+        // Increment attended classes if the user attended
+        if (attended) {
+          subject.present += 1;
+        }
       }
     });
 
@@ -55,6 +55,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Attendance updated successfully!" });
   } catch (error) {
     console.log("Error updating attendance:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Type guard for better error handling
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: "An unknown error occurred" }, { status: 500 });
+    }
   }
 }

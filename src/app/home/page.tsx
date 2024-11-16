@@ -1,32 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-"use client";
-
-import { useState } from "react";
+'use client'
+import { useState, useEffect } from "react";
 import axios from "axios";
 import LoginNavbar from "@/components/login navbar/LoginNavbar";
 import "./style.css";
 import toast, { Toaster } from "react-hot-toast";
 
+interface Subject {
+  name: string;
+  total: number;
+  present: number;
+  isToday: boolean;
+}
+
 function AttendancePage() {
-  const [view, setView] = useState<"select" | "attendance" | "addSubject">(
-    "select"
-  );
-  const [subjects, setSubjects] = useState<
-    { name: string; total: number; attended: number }[]
-  >([]);
+  const [view, setView] = useState<"select" | "attendance" | "addSubject">("select");
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
   const [newSubject, setNewSubject] = useState("");
   const [isFetchingSubjects, setIsFetchingSubjects] = useState(false);
 
   // Fetch subjects for attendance
-
-  // Define the type for a subject
-  interface Subject {
-    name: string;
-    total: number;
-    present: number;
-  }
-
   const fetchSubjects = async () => {
     setIsFetchingSubjects(true);
     try {
@@ -38,21 +32,18 @@ function AttendancePage() {
       }
 
       // Map the subjects array to the desired structure
-      setSubjects(
-        subjects.map(({ name, total, present }) => ({
-          name,
-          total,
-          attended: present,
-        }))
-      );
+      setSubjects(subjects.map(({ name, total, present, isToday }) => ({
+        name,
+        total,
+        present, // Use 'present' instead of 'attended'
+        isToday,
+      })));
 
       // Initialize attendance state
-      setAttendance(
-        subjects.reduce((acc: Record<string, boolean>, { name }) => {
-          acc[name] = false; // Default to not attended
-          return acc;
-        }, {})
-      );
+      setAttendance(subjects.reduce((acc: Record<string, boolean>, { name }) => {
+        acc[name] = false; // Default to not attended
+        return acc;
+      }, {}));
     } catch (error) {
       console.error("Error fetching subjects:", error);
       toast.error("Failed to fetch subjects. Please try again later.");
@@ -61,21 +52,29 @@ function AttendancePage() {
     }
   };
 
+  // Toggle isToday status for a subject
+  const toggleIsToday = (name: string) => {
+    setSubjects((prevSubjects) =>
+      prevSubjects.map((subject) =>
+        subject.name === name ? { ...subject, isToday: !subject.isToday } : subject
+      )
+    );
+  };
+
   // Submit attendance
   const submitAttendance = async () => {
-    const attendanceUpdates = Object.entries(attendance).map(
-      ([name, attended]) => ({
-        name,
-        attended,
-      })
-    );
+    const attendanceUpdates = subjects.map(({ name, isToday }) => ({
+      name,
+      isToday,
+      attended: attendance[name] || false,
+    }));
 
     try {
       await axios.post("/api/users/attendance", { attendanceUpdates });
       toast.success("Attendance marked successfully!");
       setView("select");
     } catch (error) {
-      console.error(error);
+      console.error("Error submitting attendance:", error);
       toast.error("Failed to submit attendance. Please try again later.");
     }
   };
@@ -87,14 +86,14 @@ function AttendancePage() {
       return;
     }
     try {
-      const addSub = await axios.post("/api/users/add-subject", {
+      await axios.post("/api/users/add-subject", {
         subject: newSubject,
       });
       toast.success("Subject added successfully!");
       setNewSubject("");
       fetchSubjects(); // Refresh subjects
     } catch (error) {
-      console.log(error);
+      console.error("Error adding subject:", error);
       toast.error("Failed to add subject. Please try again later.");
     }
   };
@@ -104,9 +103,7 @@ function AttendancePage() {
       <Toaster />
       <LoginNavbar />
       <div className="max-w-4xl mx-auto p-6 space-y-8 bg-slate-100 border-r-2 border-b-2 shadow-md home-content backdrop-blur-sm rounded-md">
-        <h1 className="text-3xl font-bold text-center text-blue-600">
-          Attendance Management
-        </h1>
+        <h1 className="text-3xl font-bold text-center text-blue-600">Attendance Management</h1>
 
         {/* Option Selection */}
         {view === "select" && (
@@ -141,50 +138,60 @@ function AttendancePage() {
             >
               <div className="space-y-4 mt-4">
                 {subjects.map((subject) => (
-                  <div
-                    key={subject.name}
-                    className="flex items-center justify-between gap-4 text-black"
-                  >
+                  <div key={subject.name} className="flex items-center justify-between gap-4 text-black">
                     <span className="font-medium">{subject.name}</span>
-                    <div className="flex gap-10 md:gap-20">
-                      <label>
-                        <input
-                          type="radio"
-                          name={subject.name}
-                          value="attended"
-                          checked={attendance[subject.name] === true}
-                          onChange={() =>
-                            setAttendance((prev) => ({
-                              ...prev,
-                              [subject.name]: true,
-                            }))
-                          }
-                        />{" "}
-                        Attended
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name={subject.name}
-                          value="not_attended"
-                          checked={attendance[subject.name] === false}
-                          onChange={() =>
-                            setAttendance((prev) => ({
-                              ...prev,
-                              [subject.name]: false,
-                            }))
-                          }
-                        />{" "}
-                        Not Attended
-                      </label>
-                    </div>
+
+                    {/* Toggle isToday */}
+                    <button
+                      type="button"
+                      onClick={() => toggleIsToday(subject.name)}
+                      className={`px-2 py-1 rounded ${subject.isToday ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-800'}`}
+                    >
+                      {subject.isToday ? "Scheduled for Today" : "Not Scheduled for Today"}
+                    </button>
+
+                    {/* Attendance options */}
+                    {subject.isToday && (
+                      <div className="flex gap-10 md:gap-20">
+                        <label>
+                          <input
+                            type="radio"
+                            name={subject.name}
+                            value="attended"
+                            checked={attendance[subject.name] === true}
+                            onChange={() =>
+                              setAttendance((prev) => ({
+                                ...prev,
+                                [subject.name]: true,
+                              }))
+                            }
+                          />{" "}
+                          Attended
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name={subject.name}
+                            value="not_attended"
+                            checked={attendance[subject.name] === false}
+                            onChange={() =>
+                              setAttendance((prev) => ({
+                                ...prev,
+                                [subject.name]: false,
+                              }))
+                            }
+                          />{" "}
+                          Not Attended
+                        </label>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
               <div className="mt-6 flex justify-between">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-400 text-white rounded shadow hover:bg-gray-500"
+                  className="px-4 py-2 bg-gray-400 text-black rounded shadow hover:bg-gray-500"
                   onClick={() => setView("select")}
                 >
                   Back
