@@ -40,10 +40,7 @@ const Navbar = () => {
           <Link href="/about">About</Link>
         </li>
         <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
-          <Link href="/services">Services</Link>
-        </li>
-        <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
-          <Link href="/contact">Contact</Link>
+          <Link href="/FAQs">FAQs</Link>
         </li>
       </ul>
     </nav>
