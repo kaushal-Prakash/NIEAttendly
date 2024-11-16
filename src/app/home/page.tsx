@@ -138,14 +138,14 @@ function AttendancePage() {
             >
               <div className="space-y-4 mt-4">
                 {subjects.map((subject) => (
-                  <div key={subject.name} className="hidden md:flex items-center justify-between gap-4 text-black">
+                  <div key={subject.name} className="flex items-center justify-between gap-4 text-black">
                     <span className="font-medium">{subject.name}</span>
 
                     {/* Toggle isToday */}
                     <button
                       type="button"
                       onClick={() => toggleIsToday(subject.name)}
-                      className={`px-2 py-1 rounded ${subject.isToday ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-800'}`}
+                      className={`px-2 py-1 hidden md:block rounded ${subject.isToday ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-800'}`}
                     >
                       {subject.isToday ? "Scheduled for Today" : "Not Scheduled for Today"}
                     </button>
