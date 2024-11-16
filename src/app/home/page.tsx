@@ -147,7 +147,7 @@ function AttendancePage() {
                       onClick={() => toggleIsToday(subject.name)}
                       className={`px-2 py-1 rounded ${subject.isToday ? 'bg-green-500 text-white hidden md:block' : 'bg-gray-300 text-gray-800'}`}
                     >
-                      {subject.isToday ? "Scheduled for Today" : "Not Scheduled for Today"}
+                      {subject.isToday ? "Click here to Select" : "Click here to remove"}
                     </button>
 
                     {/* Attendance options */}
