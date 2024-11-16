@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 connect();
 
@@ -12,20 +14,21 @@ export async function POST(request: NextRequest) {
 
     console.log(reqBody);
 
-    // check if user already exists
-    const user = await User.findOne({ email });
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
 
-    if (user) {
+    if (existingUser) {
       return NextResponse.json(
         { error: "User already exists" },
         { status: 400 }
       );
     }
 
-    // hash password
+    // Hash password
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
+    // Create and save the new user
     const newUser = new User({
       email,
       password: hashedPassword,
@@ -33,13 +36,41 @@ export async function POST(request: NextRequest) {
 
     const savedUser = await newUser.save();
 
-    return NextResponse.json({
+    // Generate JWT token
+    const tokenSecret = process.env.TOKEN_SECRET;
+    if (!tokenSecret) {
+      return NextResponse.json(
+        { error: "Token secret is not defined" },
+        { status: 500 }
+      );
+    }
+
+    const tokenData = {
+      id: savedUser._id,
+      email: savedUser.email,
+    };
+
+    const token = jwt.sign(tokenData, tokenSecret, {
+      expiresIn: "1d", // Token expires in 1 day
+    });
+
+    // Set token in cookies
+    const response = NextResponse.json({
       message: "User created successfully",
       success: true,
-      savedUser,
     });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" && request.url.startsWith("https"),
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 24, // 1 day (in seconds)
+    });
+
+    return response;
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Error during signup:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
