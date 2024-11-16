@@ -17,8 +17,8 @@ const About: React.FC = () => {
         But don&apos;t worry, I&apos;m on it! 🔧
       </p>
       <p className="text-lg mb-4">
-        Your feedback is super important to me, and I'm committed to making improvements and adding 
-        new features as needed. So, bear with me, and let’s make Attendly the best it can be, together! 💪
+        Your feedback is super important to me, and I&apos;m committed to making improvements and adding 
+        new features as needed. So, bear with me, and let&apos;s make Attendly the best it can be, together! 💪
       </p>
       <p className="text-lg mb-4">
         Thanks for being part of the Attendly community. I appreciate you! 🙌
