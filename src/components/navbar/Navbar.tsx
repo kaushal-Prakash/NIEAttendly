@@ -11,6 +11,10 @@ const Navbar = () => {
     setIsOpen(!isOpen);
   };
 
+  const closeMenu = () => {
+    setIsOpen(false);
+  };
+
   useEffect(() => {
     const t1 = gsap.timeline();
     t1.fromTo(
@@ -34,13 +38,13 @@ const Navbar = () => {
         } md:relative md:flex-row md:space-y-0 md:space-x-6 md:transform-none md:h-auto md:w-auto font-semibold`}
       >
         <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
-          <Link href="/home">Home</Link>
+          <Link href="/home" onClick={closeMenu}>Home</Link>
         </li>
         <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
-          <Link href="/about">About</Link>
+          <Link href="/about" onClick={closeMenu}>About</Link>
         </li>
         <li className="text-2xl md:text-base hover:text-blue-800 duration-200 hover:scale-110 hover:-translate-x-1 hover:-translate-y-1">
-          <Link href="/FAQs">FAQs</Link>
+          <Link href="/FAQs" onClick={closeMenu}>FAQs</Link>
         </li>
       </ul>
     </nav>
