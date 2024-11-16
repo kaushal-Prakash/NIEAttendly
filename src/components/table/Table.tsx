@@ -16,7 +16,7 @@ interface TableProps {
 const Table: React.FC<TableProps> = ({ data }) => {
   return (
     <div>
-      <h1 className='font-semibold text-blue-600 text-center m-3 text-lg sm:md-2xl md:text-3xl'>Subjects Statistics</h1>
+      <h1 className='font-semibold text-blue-600 text-center m-3 text-lg sm:md-2xl md:text-3xl'>Subjects Statistics : Total - {data.length}</h1>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
