@@ -4,33 +4,34 @@ import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// Connect to the database
+// Ensure the database is connected
 connect();
 
 export async function POST(request: NextRequest) {
   try {
+    // Retrieve the token from the cookies
     const lastToken = request.cookies.get("token")?.value || "";
-    if(lastToken != ""){
-      const response = NextResponse.json({
+
+    // If the token exists, return a successful login response
+    if (lastToken) {
+      return NextResponse.json({
         message: "Login successful",
         success: true,
       });
-
-      return response;
     }
 
-    // Parse request body
-    const reqBody = await request.json();
-    const { email, password } = reqBody;
+    // Parse the request body to get the email and password
+    const { email, password } = await request.json();
 
+    // Validate the email and password
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
-        { status: 400 }
+        { status: 404 }
       );
     }
 
-    // Check if user exists
+    // Find the user in the database by email
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json(
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
     }
     console.log("User found");
 
-    // Check if password is correct
+    // Verify the password
     const validPassword = await bcryptjs.compare(password, user.password);
     if (!validPassword) {
       return NextResponse.json(
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
     console.log("Password is correct");
 
-    // Ensure TOKEN_SECRET is defined in the environment
+    // Ensure the token secret is defined in the environment variables
     const tokenSecret = process.env.TOKEN_SECRET;
     if (!tokenSecret) {
       return NextResponse.json(
@@ -59,37 +60,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create token data
+    // Create the JWT payload
     const tokenData = {
       id: user._id,
       email: user.email,
     };
 
-    // Generate JWT token
+    // Sign the JWT token
     const token = jwt.sign(tokenData, tokenSecret, {
       expiresIn: "1d", // Token expires in 1 day
     });
 
-    // Create response and set the token cookie
+    // Create the response and set the JWT token as a cookie
     const response = NextResponse.json({
       message: "Login successful",
       success: true,
     });
 
-    // Set the token as a cookie (secure flag should be set to `true` in production)
     response.cookies.set("token", token, {
       httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
       secure: process.env.NODE_ENV === "production" && request.url.startsWith("https"),
       // Only set secure cookies in production
-      sameSite: "strict", // Mitigate CSRF attacks (lowercase "strict")
+      sameSite: "strict", // Mitigate CSRF attacks
       path: "/", // Make the cookie accessible across the site
       maxAge: 60 * 60 * 24, // 1 day (in seconds)
     });
 
     return response;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    console.error("Error during login:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
