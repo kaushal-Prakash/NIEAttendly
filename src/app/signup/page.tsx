@@ -25,7 +25,7 @@ export default function SignupPage() {
       console.log("Signup success", response.data);
       toast.success("Signup successful!");
       setSuccess("Signup successful!"); // Success message
-      router.push("/login"); // Redirect to login page after successful signup
+      window.location.href = "/home";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log("Signup failed", error.message);
