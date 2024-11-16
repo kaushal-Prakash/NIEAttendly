@@ -38,7 +38,7 @@ export default function LoginPage() {
       // Redirect with a forced reload to ensure state updates
       setTimeout(() => {
         router.push("/home"); // Redirect to the home page
-    }, 500);
+    }, 2000);
     } catch (error: any) {
       console.log("Login failed:", error.message);
   
