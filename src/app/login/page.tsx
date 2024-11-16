@@ -1,13 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import Image from "next/image";
 
 export default function LoginPage() {
-  const router = useRouter();
 
   const [user, setUser] = useState({ email: "", password: "" });
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -18,33 +17,37 @@ export default function LoginPage() {
   const onLogin = async () => {
     try {
       setLoading(true);
-      setError(null); // Reset error message
-
+      setError(null); // Reset error state
+  
       const response = await axios.post("/api/users/login", user);
+  
+      // Log full response for debugging
       console.log("Login Response:", response);
-
+  
       toast.success("Login successful!");
       setSuccess("Login successful!");
-
-      // Optionally store authentication token (e.g., in cookies or localStorage)
-      localStorage.setItem("authToken", response.data.token); // Example for JWT
+  
+      // Save token (if applicable)
+      localStorage.setItem("authToken", response.data.token);
+  
+      // Debug token storage
       console.log("Token saved to localStorage");
-
-      // Redirect to dashboard or homepage
-      router.push("/home");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  
+      // Redirect with a forced reload to ensure state updates
+      window.location.href = "/home";
     } catch (error: any) {
-      console.log("Login failed:", error.message);
-
-      // Log the entire error for debugging
-      console.log("Full Error Object:", error);
-
+      console.error("Login failed:", error.message);
+  
+      // Log full error object
+      console.error("Full Error Object:", error);
+  
       toast.error("Login failed. Please check your credentials.");
       setError("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Disable button if user email or password is empty
   useEffect(() => {
