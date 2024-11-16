@@ -138,7 +138,7 @@ function AttendancePage() {
             >
               <div className="space-y-4 mt-4">
                 {subjects.map((subject) => (
-                  <div key={subject.name} className="flex items-center justify-between gap-4 text-black">
+                  <div key={subject.name} className="hidden md:flex items-center justify-between gap-4 text-black">
                     <span className="font-medium">{subject.name}</span>
 
                     {/* Toggle isToday */}
