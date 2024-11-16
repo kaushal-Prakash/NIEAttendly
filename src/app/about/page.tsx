@@ -14,7 +14,7 @@ const About: React.FC = () => {
       <p className="text-lg mb-4">
         Attendly is a labor of love, created by a solo developer who poured in countless hours to bring this vision to life. 
         As with any new project, you might encounter some bugs and notice a few features that are still a work in progress. 
-        But don’t worry, I'm on it! 🔧
+        But don&apos;t worry, I&apos;m on it! 🔧
       </p>
       <p className="text-lg mb-4">
         Your feedback is super important to me, and I'm committed to making improvements and adding 
