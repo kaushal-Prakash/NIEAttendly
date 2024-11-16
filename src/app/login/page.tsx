@@ -40,10 +40,10 @@ export default function LoginPage() {
         router.push("/home"); // Redirect to the home page
     }, 500);
     } catch (error: any) {
-      console.error("Login failed:", error.message);
+      console.log("Login failed:", error.message);
   
       // Log full error object
-      console.error("Full Error Object:", error);
+      console.log("Full Error Object:", error);
   
       toast.error("Login failed. Please check your credentials.");
       setError("Login failed. Please check your credentials.");
