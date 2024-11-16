@@ -6,13 +6,17 @@ import { useRouter } from 'next/navigation';
 
 export default function LogoutButton() {
     const router = useRouter();
+
     const handleLogout = async () => {
         try {
             const res = await axios.get("/api/users/logout", { withCredentials: true });
             if (res.status === 200) {
                 toast.success("Logout successful");
-                router.push("/");
-                // Optional: Redirect or update UI after successful logout
+
+                // Add a timeout before redirecting or performing further actions
+                setTimeout(() => {
+                    router.push("/"); // Redirect to the home page
+                }, 500); // 2 seconds delay
             } else {
                 alert("Logout failed");
             }

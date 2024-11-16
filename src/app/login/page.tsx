@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
 
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const router = useRouter();
   const onLogin = async () => {
     try {
       setLoading(true);
@@ -34,7 +36,9 @@ export default function LoginPage() {
       console.log("Token saved to localStorage");
   
       // Redirect with a forced reload to ensure state updates
-      window.location.href = "/home";
+      setTimeout(() => {
+        router.push("/home"); // Redirect to the home page
+    }, 500);
     } catch (error: any) {
       console.error("Login failed:", error.message);
   
