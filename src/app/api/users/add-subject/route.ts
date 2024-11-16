@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import Attendly from '@/models/userModel';
 import { connect } from '@/dbConfig/dbConfig';
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Find or initialize the subject in the user's subjects array
-    let userSubject = user.subjects.find(s => s.name === subjectName);
+    let userSubject = user.subjects.find(((s: { name: any; }) => s.name === subjectName));
     if (!userSubject) {
       console.log('Adding new subject:', subjectName);
       userSubject = { name: subjectName, total: 0, present: 0 };

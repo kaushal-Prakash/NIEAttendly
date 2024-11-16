@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Update attendance for each subject
     attendanceUpdates.forEach(({ name, isToday, attended }) => {
-      let subject = user.subjects.find(subject => subject.name === name.toLowerCase());
+      let subject = user.subjects.find((subject: { name: string; }) => subject.name === name.toLowerCase());
 
       if (!subject) {
         // Initialize the subject if it doesn't exist
