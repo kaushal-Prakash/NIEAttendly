@@ -16,17 +16,25 @@ export async function GET(request: NextRequest) {
 
     // If user is not found, throw an error
     if (!user) {
-      throw new Error("User not found");
+      return NextResponse.json({ error: "User Not Found" }, { status: 404 });
     }
 
-    // Return the user data
+    // Return the subjects array from the user data
     return NextResponse.json({
       message: "User found",
-      data: user,
+      subjects: user.subjects,
     });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    // Handle errors and return a 400 status with the error message
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  } catch (error) {
+    // Narrow the type of error
+    if (error instanceof Error) {
+      console.log("Error fetching subjects:", error.message);
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    } else {
+      console.log("Unknown error:", error);
+      return NextResponse.json(
+        { error: "An unknown error occurred" },
+        { status: 400 }
+      );
+    }
   }
 }

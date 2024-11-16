@@ -5,7 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import LoginNavbar from "@/components/login navbar/LoginNavbar";
 import "./style.css";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 function AttendancePage() {
   const [view, setView] = useState<"select" | "attendance" | "addSubject">(
@@ -19,33 +19,42 @@ function AttendancePage() {
   const [isFetchingSubjects, setIsFetchingSubjects] = useState(false);
 
   // Fetch subjects for attendance
+
+  // Define the type for a subject
+  interface Subject {
+    name: string;
+    total: number;
+    present: number;
+  }
+
   const fetchSubjects = async () => {
     setIsFetchingSubjects(true);
     try {
-      const { data } = await axios.get("/api/users/me");
+      const response = await axios.get("/api/users/me");
+      const { subjects }: { subjects: Subject[] } = response.data;
 
-      // Ensure TypeScript understands the structure
-      const subjectsData: Record<string, [number, number]> =
-        data.subjects || {};
+      if (!subjects || !Array.isArray(subjects)) {
+        throw new Error("Invalid subjects data");
+      }
 
+      // Map the subjects array to the desired structure
       setSubjects(
-        Object.entries(subjectsData).map(([name, [total, attended]]) => ({
+        subjects.map(({ name, total, present }) => ({
           name,
           total,
-          attended,
+          attended: present,
         }))
       );
+
+      // Initialize attendance state
       setAttendance(
-        Object.keys(subjectsData).reduce(
-          (acc: Record<string, boolean>, name) => {
-            acc[name] = false; // Default to not attended
-            return acc;
-          },
-          {}
-        )
+        subjects.reduce((acc: Record<string, boolean>, { name }) => {
+          acc[name] = false; // Default to not attended
+          return acc;
+        }, {})
       );
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching subjects:", error);
       toast.error("Failed to fetch subjects. Please try again later.");
     } finally {
       setIsFetchingSubjects(false);
@@ -92,6 +101,7 @@ function AttendancePage() {
 
   return (
     <div className="min-h-screen w-full text-gray-800 bg-cover bg-center home-container">
+      <Toaster />
       <LoginNavbar />
       <div className="max-w-4xl mx-auto p-6 space-y-8 bg-slate-100 border-r-2 border-b-2 shadow-md home-content backdrop-blur-sm rounded-md">
         <h1 className="text-3xl font-bold text-center text-blue-600">
@@ -131,14 +141,12 @@ function AttendancePage() {
             >
               <div className="space-y-4 mt-4">
                 {subjects.map((subject) => (
-                  <div key={subject.name} className="flex flex-col gap-2">
-                    <div className="flex justify-between">
-                      <span className="font-medium">{subject.name}</span>
-                      <span className="text-sm text-gray-500">
-                        Total: {subject.total}, Attended: {subject.attended}
-                      </span>
-                    </div>
-                    <div className="flex gap-4">
+                  <div
+                    key={subject.name}
+                    className="flex items-center justify-between gap-4 text-black"
+                  >
+                    <span className="font-medium">{subject.name}</span>
+                    <div className="flex gap-10 md:gap-20">
                       <label>
                         <input
                           type="radio"

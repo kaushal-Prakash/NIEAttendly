@@ -25,19 +25,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Ensure the subjects field is an array
+    if (!user.subjects || !Array.isArray(user.subjects)) {
+      console.log('Initializing subjects array');
+      user.subjects = [];
+    }
+
     // Update attendance for each subject
     attendanceUpdates.forEach(({ name, attended }) => {
-      if (!user.subjects[name]) {
+      let subject = user.subjects.find((subject: { name: string; }) => subject.name === name.toLowerCase());
+      if (!subject) {
         // Initialize the subject if it doesn't exist
-        user.subjects[name] = [0, 0];
+        subject = { name: name.toLowerCase(), total: 0, present: 0 };
+        user.subjects.push(subject);
       }
 
-      // Increment total classes (0th element)
-      user.subjects[name][0] += 1;
+      // Increment total classes
+      subject.total += 1;
 
-      // Increment attended classes (1st element) if the user attended
+      // Increment attended classes if the user attended
       if (attended) {
-        user.subjects[name][1] += 1;
+        subject.present += 1;
       }
     });
 
@@ -45,8 +53,7 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     return NextResponse.json({ message: "Attendance updated successfully!" });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error) {
     console.log("Error updating attendance:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
