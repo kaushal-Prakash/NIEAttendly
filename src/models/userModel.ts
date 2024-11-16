@@ -1,6 +1,23 @@
 import mongoose from "mongoose";
 
-// Define the schema
+// Define the schema for a subject
+const subjectSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    lowercase: true, // Ensure subject names are stored in lowercase
+  },
+  total: {
+    type: Number,
+    default: 0,
+  },
+  present: {
+    type: Number,
+    default: 0,
+  },
+});
+
+// Define the user schema
 const attendlySchema = new mongoose.Schema({
   email: {
     type: String,
@@ -12,16 +29,15 @@ const attendlySchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a password"],
   },
-  attendance: {
-    type: Map,
-    of: Number, // Store attendance counts or percentages per subject
-    default: {},
+  subjects: {
+    type: [subjectSchema], // Array of subject objects
+    default: [], // Default to an empty array
   },
 }, {
   timestamps: true, // Automatically adds createdAt and updatedAt fields
 });
 
 // Create or use the existing model
-const Attendly = mongoose.models.Attendly || mongoose.model("Attendly", attendlySchema);
+const AttendlyUser = mongoose.models.AttendlyUser || mongoose.model("AttendlyUser", attendlySchema);
 
-export default Attendly;
+export default AttendlyUser;
