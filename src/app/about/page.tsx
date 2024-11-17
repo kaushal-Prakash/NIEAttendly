@@ -9,10 +9,10 @@ const About: React.FC = () => {
       </p>
       <p className="text-lg mb-4">
         This is your go-to platform for managing attendance. Designed especially for students, 
-        Attendly helps you keep track of your classes, so you never miss a beat. 📚
+        Attendly helps you keep track of your classes, so you never miss a beat and keep track of your attendance. 📚
       </p>
       <p className="text-lg mb-4">
-        Attendly is a labor of love, created by a solo developer who poured in countless hours to bring this vision to life. 
+      Attendly is a passion project, created with a lot of dedication and hard work to make it happen.
         As with any new project, you might encounter some bugs and notice a few features that are still a work in progress. 
         But don&apos;t worry, I&apos;m on it! 🔧
       </p>
@@ -24,7 +24,7 @@ const About: React.FC = () => {
         Thanks for being part of the Attendly community. I appreciate you! 🙌
       </p>
       <p className="text-lg text-center font-semibold">
-        <strong>- Creator</strong>
+        <strong>- Dev Shadow</strong>
       </p>
     </div>
   );
