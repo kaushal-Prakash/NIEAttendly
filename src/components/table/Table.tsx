@@ -33,7 +33,7 @@ const Table: React.FC<TableProps> = ({ data }) => {
               <td style={{ border: '1px solid black', padding: '8px', textAlign: 'right' }}>{row.total}</td>
               <td style={{ border: '1px solid black', padding: '8px', textAlign: 'right' }}>{row.present}</td>
               <td style={{ border: '1px solid black', padding: '8px', textAlign: 'right' }}>
-                {((row.present / row.total) * 100).toFixed(2)}%
+                {row.total > 0 ? ((row.present / row.total) * 100).toFixed(2) : 'N/A'}%
               </td>
             </tr>
           ))}
