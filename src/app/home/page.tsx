@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import LoginNavbar from "@/components/login navbar/LoginNavbar";
-import "./style.css";
 import toast, { Toaster } from "react-hot-toast";
 
 interface Subject {
@@ -99,7 +98,7 @@ function AttendancePage() {
   };
 
   return (
-    <div className="min-h-screen w-full text-gray-800 bg-cover bg-center home-container">
+    <div className="min-h-screen w-full text-gray-800 bg-cover bg-center z-1 home-container">
       <Toaster />
       <LoginNavbar />
       <div className="max-w-4xl mx-auto p-6 space-y-8 bg-slate-100 border-r-2 border-b-2 shadow-md home-content backdrop-blur-sm rounded-md">
@@ -128,13 +127,14 @@ function AttendancePage() {
 
         {/* Attendance Form */}
         {view === "attendance" && (
-          <div className="p-4 bg-white rounded-lg shadow-md">
+          <div className="p-4 min-h-fit bg-white rounded-lg shadow-md mb-5">
             <h2 className="text-xl font-bold text-blue-600">Mark Attendance</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 submitAttendance();
               }}
+              className="mb-5"
             >
               <div className="space-y-4 mt-4">
                 {subjects.map((subject) => (
